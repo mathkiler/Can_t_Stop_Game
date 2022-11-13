@@ -1,6 +1,0 @@
-<<<<<<< HEAD
-je modifie le txt
-=======
-ebycauiechuaizvcdghka
->>>>>>> d194895c2c5a5eab3343b4d76f6ea49ecd6e6601
-balblablablbbblablbla
