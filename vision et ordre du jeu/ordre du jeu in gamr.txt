@@ -1,0 +1,11 @@
+1.1 : demande de lancer les dés (cf image 2)
+1.2 : affichage animation randomisation/lancé des dés
+2.1 : demande de choix d'association de dés (cf image 3) + affichage de prévisualisation d'où serai place les camp
+2.2 : une fois assos choisis, animationde déplacement des alpinistes (vers)/(dans) la montagne 
+2.3 : association impossible (tout les alpiniste sont perdu), affichage perdu + animation tout les alpinistes s'en vont + bouton next player
+2.4 : demande de continuer ou pas (cf im 5) si non change de joueu, si oui ou non retour à l'image 2 (1.1)
+3 : fin du jeu une fois qu'un joueur place 3 camp au sommet (cf image 6)
+
+
+
+
