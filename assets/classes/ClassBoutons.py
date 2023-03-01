@@ -26,10 +26,14 @@ class Boutons :
     def destruction_tout_les_boutons(self) :
         self.liste_bouton = []
     
-    def test_survole(self, pos_sourie_X, pos_sourie_Y, clic) :
+    def test_survole(self, pos_sourie_X, pos_sourie_Y, clic, text_joueur_actuel, IA_joue) :
         for bouton in self.liste_bouton :
             bouton["survol"] = False
             if bouton["position_x"] < pos_sourie_X < bouton["position_x"]+self.taille_bouton[0] and bouton["position_y"] < pos_sourie_Y < bouton["position_y"]+self.taille_bouton[1] :
                 bouton["survol"] = True
-                if clic == 1 :               
-                    bouton["clic"] = True
+                if clic == 1 :
+                    print(IA_joue, text_joueur_actuel)
+                    if IA_joue and text_joueur_actuel == 2 :
+                        pass 
+                    else :
+                        bouton["clic"] = True

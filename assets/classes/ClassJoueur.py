@@ -73,8 +73,6 @@ class Joueur :
                     ind_tour = 0
                     for tour in self.progression_tour["colonne"] :
                         if tour == None : #si la tour n'est pas encore utilisé
-                            
-
                             self.progression_tour["colonne"][ind_tour] = colonne #on initialise la tour avec colonne et hauteur (à 1 par défault)
                             if self.pion_placement[colonne] == None :
                                 self.progression_tour["hauteur"][ind_tour] = 1

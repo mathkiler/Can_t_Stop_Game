@@ -51,11 +51,9 @@ class Des :
         #analyse et affichage des boutons
         y = 3*self.hauteur_ecran//11
         indice = 1
-        print("\n---____----\n")
         for possibilite in self.colonne_association.values() :
             #choix où les deux déplacement sont possible
             cas_figure = -1 #var qui indiue le cas de figure des dés comme par exemple cas 0, la progression sur les 2 combinaison est possible
-            print(f"{joueur.joueur=} -- colonne :  {joueur.progression_tour['colonne']} -- {possibilite=} -- fini : {joueur.colonne_fini}")
             if joueur.progression_tour["colonne"].count(None) >= 2 :
                 if possibilite[0] not in joueur.colonne_fini and possibilite[1] not in joueur.colonne_fini :
                     cas_figure = 0
@@ -86,10 +84,12 @@ class Des :
 
             #test pour éviter de faire un double alors que le sommet n'es que à une seul case. Si ce cas se présente, on force l'affichage et le choix d'une seul possibilité (on remplace par exemple un "Progresser sur 7 et 7" par un "Progresser sur 7")
             for ind_tour in range(3) :
-                if joueur.progression_tour["hauteur"][ind_tour] == None :
-                    tamp = joueur.pion_placement[possibilite[0]]
+                if joueur.progression_tour["hauteur"][ind_tour] == None and joueur.pion_placement[possibilite[0]] != None:
+                    tamp = joueur.pion_placement[possibilite[0]]+1
+                elif joueur.progression_tour["hauteur"][ind_tour] != None:
+                    tamp = joueur.progression_tour["hauteur"][ind_tour]
                 else :
-                    tamp = joueur.progression_tour["hauteur"][ind_tour]+1
+                    tamp = None
                 if cas_figure == 0 and possibilite[0] == possibilite[1] and test_end_colonne(tamp, possibilite[0]) :
                     cas_figure = 1
 

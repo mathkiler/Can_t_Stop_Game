@@ -18,24 +18,21 @@ def changement_joueur(joueur_actuel) :
         return 1
     
 def test_end_colonne(hauteur, colonne) :
-    print(f"{hauteur=} {colonne=}")
     if hauteur == None :
         return False
     elif colonne <= 7 and colonne+(colonne-1) <= hauteur : #test si on atteint au prochain tour (d'où le +1 à la toute fin) le sommet d'une colonne du côté gauche du plateau (de 2 à 7 compris)
-        print("true -7 colonne")
         return True
     elif colonne > 7 and (7-abs(7-colonne))+(13-colonne) <= hauteur : #test si on attein au prochain tour le sommet d'une colonne du côté droit du plateau (de 8 à 12 compris)
-        print("true+7 colonne")
         return True
     return False
 
 
-def randomiseur_joueur_commence(j1, j2, ia, ia_joue, randint) :
+def randomiseur_joueur_commence(j1, j2, ia_joue, randint) :
     rand = randint(1,2)
     if rand == 1 :
         return j1, rand, None
     else :
         if ia_joue :
-            return ia, rand, "Tour de l'IA"
+            return j2, rand, "Tour de l'IA"
         return j2, rand, None
         
