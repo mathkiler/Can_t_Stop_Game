@@ -108,7 +108,7 @@ boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//6, "
 boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//50, "Jouer en J vs IA", "jouer_jcai", None)
 boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4+hauteur_ecran//8, "Quitter", "quitter", None)
 des = Des(largeur_ecran, hauteur_ecran, resource_path0)
-ia = IA(largeur_ecran, hauteur_ecran, resource_path0)
+ia = IA()
 
 
 
@@ -163,9 +163,12 @@ while main_loop:
                 elif bouton["type_bouton"] == "jouer_jcj" :
                     #lancement d'une nouvelle partie (on passe dans la boucle game_loop)
                     boutons.destruction_tout_les_boutons()
-                    joueur_actuel, text_joueur_actuel, message_change_en_jeu = randomiseur_joueur_commence(joueur_jaune1, joueur_rouge2, ia, IA_joue, randint)
+                    text_joueur_actuel = randint(1,2)
+                    if text_joueur_actuel == 1 :
+                        joueur_actuel = joueur_jaune1 #variable qui contiendra la class du joueur actuel (utile pour simplifier le code)
+                    else :
+                        joueur_actuel = joueur_rouge2
                     boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2, "Lancer les dés", "lancer_des", None)
-                    ia.calcule_meilleur_choix(boutons.liste_bouton)
                     menu_loop = False
                     game_loop = True
                 elif bouton["type_bouton"] == "jouer_jcia" :
@@ -207,10 +210,10 @@ while main_loop:
         window.blit(plateau.image_bg2, (0, plateau.position_image_bg2))
         window.blit(plateau.image_plateau, (0, 0))
         #texte de qui doit jouer
-        if message_change_en_jeu == None :
+        if message_fin_jeu == None :
             msg = f"Tour du joueur {text_joueur_actuel}"
         else :
-            msg = message_change_en_jeu
+            msg = message_fin_jeu
         text_surf = font1.render(msg, True, couleur_joueur[text_joueur_actuel])
         window.blit(text_surf, text_surf.get_rect(center = (5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//11)))
 
@@ -235,8 +238,6 @@ while main_loop:
                     boutons.destruction_tout_les_boutons()
                     des.lancer_des()
                     des.init_affichage(boutons, joueur_actuel)
-                    if IA_joue :
-                        ia.calcule_meilleur_choix(boutons.liste_bouton)
                 
 
                 elif bouton["type_bouton"] == "progression" :
@@ -274,7 +275,7 @@ while main_loop:
                     boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//6, "Jouer en J vs J", "jouer_jcj", None)
                     boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//50, "Jouer en J vs IA", "jouer_jcai", None)
                     boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4+hauteur_ecran//8, "Quitter", "quitter", None)
-                    message_change_en_jeu = None
+                    message_fin_jeu = None
                     game_loop = False
                     menu_loop = True
 
@@ -325,18 +326,12 @@ while main_loop:
                 des.affichage_resultat = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []} 
                 #remise à 0 des 3 association possible (ici, on les 2 possible colonnes enregistré dans les listes)
                 des.colonne_association = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []}
-                #on recréé le bouton lancer les dés pour le prochain joueur
-                boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2, "Lancer les dés", "lancer_des", None)
                 #changement du joueur avec la fonction changement_joueur (qui est dans le fichier fonction_auxiliere.py)
                 text_joueur_actuel = changement_joueur(text_joueur_actuel)
                 if text_joueur_actuel == 1 :
                     joueur_actuel = joueur_jaune1 #variable qui contiendra la class du joueur actuel (utile pour simplifier le code)
                 else :
-                    if IA_joue :
-                        message_change_en_jeu = "Tour de l'IA"
-                        ia.calcule_meilleur_choix(boutons.liste_bouton)
-                    else :
-                        joueur_actuel = joueur_rouge2
+                    joueur_actuel = joueur_rouge2
                 #on recréé le bouton lancer les dés pour le prochain joueur
                 boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2, "Lancer les dés", "lancer_des", None)
 
@@ -379,8 +374,6 @@ while main_loop:
                 boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2-hauteur_ecran//12, "Lancer les dés", "lancer_des", None) #puis on affiche la suite du jeu avec les boutons lancer les dés et arrêter
                 boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32,hauteur_ecran//2+hauteur_ecran//12, "Stop", "stop", None)
                 joueur_actuel.animation_en_cours = False
-                if IA_joue :
-                    ia.calcule_meilleur_choix(boutons.liste_bouton)
 
         #animation des pions
         anim_pion_fini = False
@@ -409,7 +402,7 @@ while main_loop:
                 
                 if joueur_actuel.test_si_gagnant() :
                     boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2, "Retour au menu", "goto_menu", None)
-                    message_change_en_jeu = f"Le joueur {text_joueur_actuel} gagne la partie"
+                    message_fin_jeu = f"Le joueur {text_joueur_actuel} gagne la partie"
                 else :
                     boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2-hauteur_ecran//6, "Lancer les dés", "lancer_des", None) #puis on affiche la suite du jeu avec les boutons lancer les dés et arrêter
                     #chagement de joueur
@@ -417,11 +410,7 @@ while main_loop:
                     if text_joueur_actuel == 1 :
                         joueur_actuel = joueur_jaune1 #variable qui contiendra la class du joueur actuel (utile pour simplifier le code)
                     else :
-                        if IA_joue :
-                            message_change_en_jeu = "Tour de l'IA"
-                            ia.calcule_meilleur_choix(boutons.liste_bouton)
-                        else :
-                            joueur_actuel = joueur_rouge2
+                        joueur_actuel = joueur_rouge2
 
 
 

@@ -29,4 +29,13 @@ def test_end_colonne(hauteur, colonne) :
         return True
     return False
 
-            
+
+def randomiseur_joueur_commence(j1, j2, ia, ia_joue, randint) :
+    rand = randint(1,2)
+    if rand == 1 :
+        return j1, rand, None
+    else :
+        if ia_joue :
+            return ia, rand, "Tour de l'IA"
+        return j2, rand, None
+        

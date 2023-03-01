@@ -84,17 +84,19 @@ class Des :
                 if possibilite[1] in joueur.progression_tour["colonne"] and possibilite[1] not in joueur.colonne_fini :
                     cas_figure = 2
 
+            #test pour éviter de faire un double alors que le sommet n'es que à une seul case. Si ce cas se présente, on force l'affichage et le choix d'une seul possibilité (on remplace par exemple un "Progresser sur 7 et 7" par un "Progresser sur 7")
             for ind_tour in range(3) :
-                try :
-                    if cas_figure == 0 and possibilite[0] == possibilite[1] and test_end_colonne(joueur.progression_tour["hauteur"][ind_tour]+1, possibilite[0]) :
-                        cas_figure = 1
-                except :
-                    pass
+                if joueur.progression_tour["hauteur"][ind_tour] == None :
+                    tamp = joueur.pion_placement[possibilite[0]]
+                else :
+                    tamp = joueur.progression_tour["hauteur"][ind_tour]+1
+                if cas_figure == 0 and possibilite[0] == possibilite[1] and test_end_colonne(tamp, possibilite[0]) :
+                    cas_figure = 1
+
                     
                 
                 
             #affichage des bouton(s) ou non en fonction du cas de figure
-            print(f"{cas_figure=}\n")
             if cas_figure == 0 :
                 texte_bouton = f"Progresser sur {possibilite[0]} et {possibilite[1]}"
                 boutons.creation_bouton(5*self.largeur_ecran//8+3*self.largeur_ecran//32, y, texte_bouton, "progression", [possibilite[0], possibilite[1]])
