@@ -1,15 +1,18 @@
 from random import choice, randint
 import copy
-from time import sleep
+import threading
+import sys
 
 from assets.classes.variable_global import *
 from assets.classes.fonction_auxiliere import *
 
 
-class IA :
-    
-    def __init__(self) :
-        self.nombre_iterration = 100
+class IA (threading.Thread):
+    def __init__(self, choix, j1, j2) :
+        threading.Thread.__init__(self)
+        self.choix = choix
+        self.j1 = j1
+        self.j2 = j2
         self.joueur_actuel = "IA" #ici, l'IA commence toujours à jouer
         self.progression_tour = {"IA" : {"colonne" : [None, None, None], "hauteur" : [None, None, None]}, 
                                   "joueur" : {"colonne" : [None, None, None], "hauteur" : [None, None, None]}}
@@ -20,17 +23,17 @@ class IA :
         self.colonne_fini_residu = {"IA" : [], 
                              "joueur" : []}
 
-    def calcule_meilleur_choix(self, choix, j1, j2) : #on reçoit par choix les boutons sur lesquelles on peut clicker #on considaire que j1 = joueur et j2 = IA
-        if len(choix) == 1 : #ici, on n'as qu'un bouton/choix possible. On choisi donc ce bouton
-            choix[0]["clic"] = True
+    def run(self) : #on reçoit par choix les boutons sur lesquelles on peut clicker #on considaire que j1 = joueur et j2 = IA
+        if len(self.choix) == 1 : #ici, on n'as qu'un bouton/choix possible. On choisi donc ce bouton
+            self.choix[0]["clic"] = True
         else :
-            nombre_gagnant = [{"IA" : 0, "joueur" : 0} for k in range(len(choix))]
+            nombre_gagnant = [{"IA" : 0, "joueur" : 0} for k in range(len(self.choix))]
             ratio = []
 
-            for iterration in range(self.nombre_iterration) :
-                self.initialisation_simulation(j1, j2)
-                for choi in choix :
-                    ind_choix = choix.index(choi)
+            for iterration in range(nombre_iterration) :
+                self.initialisation_simulation(self.j1, self.j2)
+                for choi in self.choix :
+                    ind_choix = self.choix.index(choi)
                     #variable qui contient le nombre de partie gagné par joueur (j2 = IA)
                     #on ramène notre choix à "lancer les dés" pour synchroniser toutes les simulations possible 
                     if choi["type_bouton"] == "stop" :
@@ -61,18 +64,18 @@ class IA :
             
             #on calcule le ratio gagnant pour l'IA uniquement (nombre de partie gagné par l'IA/nombre de partie total)
             for choix_gagnant in nombre_gagnant :
-                ratio.append(choix_gagnant["IA"]/self.nombre_iterration)
+                ratio.append(choix_gagnant["IA"]/nombre_iterration)
             #on choisi le meilleur choix pour clicker sur ce bouton
-            print(ratio, nombre_gagnant, choix, "\n\n")
+            print(ratio, nombre_gagnant, self.choix, "\n\n")
             while True :
                 ind_meilleur_choix = randint(0,len(ratio)-1)
                 if ratio[ind_meilleur_choix] == max(ratio) :
                     break
 
             
-            choix[ind_meilleur_choix]["clic"] = True
-            print("choix : " +choix[ind_meilleur_choix]["type_bouton"]+"\n\__________________n")
-            
+            self.choix[ind_meilleur_choix]["clic"] = True
+            print("choix : " +self.choix[ind_meilleur_choix]["type_bouton"]+"\n\__________________n")
+        sys.exit() 
 
 
 

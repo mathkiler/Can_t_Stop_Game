@@ -4,17 +4,17 @@ import pygame
 
 class Plateau :
 
-    def __init__(self, largeur_ecran, hauteur_ecran, resource_path0) :
+    def __init__(self, largeur_ecran, hauteur_ecran, get_chemin) :
         self.hauteur_ecran = hauteur_ecran
         self.largeur_ecran = largeur_ecran
         #on importe 2 background pour faire défiler le fond
-        self.image_bg1 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/back_ground/background_en _jeu/background.png")).convert(), (largeur_ecran, hauteur_ecran))
-        self.image_bg2 = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/back_ground/background_en _jeu/background.png")).convert(), (largeur_ecran, hauteur_ecran))
+        self.image_bg1 = pygame.transform.scale(pygame.image.load(get_chemin("./assets/images/back_ground/background_en _jeu/background.png")).convert(), (largeur_ecran, hauteur_ecran))
+        self.image_bg2 = pygame.transform.scale(pygame.image.load(get_chemin("./assets/images/back_ground/background_en _jeu/background.png")).convert(), (largeur_ecran, hauteur_ecran))
         #le .convert_alpha est utile pour les image avec des parties trensparent
-        self.image_plateau = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/back_ground/background_en _jeu/plateau.png")).convert_alpha(), (largeur_ecran, hauteur_ecran))
+        self.image_plateau = pygame.transform.scale(pygame.image.load(get_chemin("./assets/images/back_ground/background_en _jeu/plateau.png")).convert_alpha(), (largeur_ecran, hauteur_ecran))
         #importation es images pour le backgorund du menu
-        self.menu_bg = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/back_ground/back_ground_menu/bg_menu_bg_etoile.png")).convert(), (largeur_ecran, largeur_ecran))
-        self.menu_fg = pygame.transform.scale(pygame.image.load(resource_path0("./assets/images/back_ground/back_ground_menu/fg_menu_forme.png")).convert_alpha(), (largeur_ecran, hauteur_ecran))
+        self.menu_bg = pygame.transform.scale(pygame.image.load(get_chemin("./assets/images/back_ground/back_ground_menu/bg_menu_bg_etoile.png")).convert(), (largeur_ecran, largeur_ecran))
+        self.menu_fg = pygame.transform.scale(pygame.image.load(get_chemin("./assets/images/back_ground/back_ground_menu/fg_menu_forme.png")).convert_alpha(), (largeur_ecran, hauteur_ecran))
 
         #paramètre pour le jeu (position des 2 background en y)
         self.position_image_bg1 = 0

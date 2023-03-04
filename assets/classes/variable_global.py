@@ -10,6 +10,9 @@ vitesse_animation = int(fps*vitesse_animation) #variable utile surtout pour effe
 message_change_en_jeu = None #message = Joueur X a gagné ! quand un joueur gagne. Sinon il affiche Tour de joueur X. Ce message pourra être aussi utilisé pour afficher "Tour de l'IA"
 #On admet quand l'IA joue, L'IA sera toujours le joueurs rouge et le joueur sera le jaune (le joueur qui commence est tout de même randomisé)
 IA_joue = False
+animation_IA_en_cours = False
+animation_IA_sprite_indice = 0
+nombre_iterration = 800
 
 #######def var boolean boucles in game
 main_loop = True #boucle de la fenêtre de jeu

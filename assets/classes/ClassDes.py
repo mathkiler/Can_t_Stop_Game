@@ -10,28 +10,30 @@ from assets.classes.fonction_auxiliere import *
 
 class Des :
 
-    def __init__(self, largeur_ecran, hauteur_ecran, resource_path0) :
+    def __init__(self, largeur_ecran, hauteur_ecran, get_chemin) :
         self.hauteur_ecran = hauteur_ecran
         self.largeur_ecran = largeur_ecran
         self.taille_des = (conv_sizex(100, largeur_ecran), conv_sizey(100, hauteur_ecran))
         self.image_des = [] #liste des images des 6 face du dés
         for face in range(1,7) :
-            self.image_des.append(pygame.transform.scale(pygame.image.load(resource_path0(f"./assets/images/des/image_des{face}.png")).convert_alpha(), (self.taille_des[0], self.taille_des[1])))
+            self.image_des.append(pygame.transform.scale(pygame.image.load(get_chemin(f"./assets/images/des/image_des{face}.png")).convert_alpha(), (self.taille_des[0], self.taille_des[1])))
         self.liste_des_lance = [] #liste qui contient les 4 dés lancé avec 2 paramètre "face" et "image" dans la fonction lancer_des
+        #affichage_resultat liste qui contient les résultat des dés. Cette liste ser à afficher les bonnes images des dés
         self.affichage_resultat = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []} #les associations des dés seront compris dans l'ordre : dés 1 va avec dé 2 et dés 3 avec le 4 (on a une liste arrangé)
+        #liste des associations (on a l'adition des couples de dés)
         self.colonne_association = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []}
         self.choix_impossible = {"choix" : {"choix1" : None, "choix2" : None, "choix3" : None},   #si un choix est None, c'est que ce choix est possible et qu'il y a un boutton associé
                                  "perdu_fin_du_tour" : False,     #"perdu_fin_du_tour" est mis en True si aucun choix n'est possible.
                                  "anim_static_image" : vitesse_animation*2}     #"anim_static_image" ets le nombre d'image (en image par secondes) qu'il reste pour que l'image avec le s3 choix impossible reste affiché pendant 2 secondes (sachant qu'on a 30 images par secondes)
                      
 
-    def lancer_des(self) :
+    def lancer_des(self) : #fonction qui lance les 4 dés
         for k in range(4) : #on lance dés
             face = randint(1,6)
             self.liste_des_lance.append({"face" : face, "image" : self.image_des[face-1]})
     
-    def init_affichage(self, boutons, joueur) :
-        #répartition des dés
+    def init_affichage(self, boutons, joueur) : #fonction qui calcule quels choix sont possible ou pas
+        #répartition des dés dans les listes d'association
         liste_association = [[1,2,3,4], [1,3,2,4], [1,4,2,3]]
         for ind in liste_association[0] :
             self.affichage_resultat["possibilité_1"].append(self.liste_des_lance[ind-1]) #on applique un "-1" pour passer en mode indice (0 étant le début de la liste)
