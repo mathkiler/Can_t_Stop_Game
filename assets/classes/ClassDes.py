@@ -22,7 +22,7 @@ class Des :
         self.affichage_resultat = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []} #les associations des dés seront compris dans l'ordre : dés 1 va avec dé 2 et dés 3 avec le 4 (on a une liste arrangé)
         #liste des associations (on a l'adition des couples de dés)
         self.colonne_association = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []}
-        self.choix_impossible = {"choix" : {"choix1" : None, "choix2" : None, "choix3" : None},   #si un choix est None, c'est que ce choix est possible et qu'il y a un boutton associé
+        self.choix_impossible = {"choix" : {"choix1" : None, "choix2" : None, "choix3" : None},   #si un choix est None, c'est que ce choix est possible et qu'il y a un bouton associé
                                  "perdu_fin_du_tour" : False,     #"perdu_fin_du_tour" est mis en True si aucun choix n'est possible.
                                  "anim_static_image" : vitesse_animation*2}     #"anim_static_image" ets le nombre d'image (en image par secondes) qu'il reste pour que l'image avec le s3 choix impossible reste affiché pendant 2 secondes (sachant qu'on a 30 images par secondes)
                      
@@ -34,16 +34,16 @@ class Des :
     
     def init_affichage(self, boutons, joueur) : #fonction qui calcule quels choix sont possible ou pas
         #répartition des dés dans les listes d'association
-        liste_association = [[1,2,3,4], [1,3,2,4], [1,4,2,3]]
-        for ind in liste_association[0] :
+        liste_association = [[1,2,3,4], [1,3,2,4], [1,4,2,3]] #on a dés 1+2 et 2+3 puis 1+3 et 2+4 puis 1+4 et 2+3
+        for ind in liste_association[0] : #1+2 et 2+3
             self.affichage_resultat["possibilité_1"].append(self.liste_des_lance[ind-1]) #on applique un "-1" pour passer en mode indice (0 étant le début de la liste)
         self.colonne_association["possibilité_1"].append(self.affichage_resultat["possibilité_1"][0]["face"]+self.affichage_resultat["possibilité_1"][1]["face"])
         self.colonne_association["possibilité_1"].append(self.affichage_resultat["possibilité_1"][2]["face"]+self.affichage_resultat["possibilité_1"][3]["face"])
-        for ind in liste_association[1] :
+        for ind in liste_association[1] : # 1+3 et 2+4
             self.affichage_resultat["possibilité_2"].append(self.liste_des_lance[ind-1])
         self.colonne_association["possibilité_2"].append(self.affichage_resultat["possibilité_2"][0]["face"]+self.affichage_resultat["possibilité_2"][1]["face"])
         self.colonne_association["possibilité_2"].append(self.affichage_resultat["possibilité_2"][2]["face"]+self.affichage_resultat["possibilité_2"][3]["face"])
-        for ind in liste_association[2] :
+        for ind in liste_association[2] : #1+4 et 2+3
             self.affichage_resultat["possibilité_3"].append(self.liste_des_lance[ind-1])
         self.colonne_association["possibilité_3"].append(self.affichage_resultat["possibilité_3"][0]["face"]+self.affichage_resultat["possibilité_3"][1]["face"])
         self.colonne_association["possibilité_3"].append(self.affichage_resultat["possibilité_3"][2]["face"]+self.affichage_resultat["possibilité_3"][3]["face"])
@@ -51,35 +51,41 @@ class Des :
         
         
         #analyse et affichage des boutons
-        y = 3*self.hauteur_ecran//11
+        y = 3*self.hauteur_ecran//11 #emplacement en y des boutons et texte choix impossible
         indice = 1
         for possibilite in self.colonne_association.values() :
             #choix où les deux déplacement sont possible
-            cas_figure = -1 #var qui indiue le cas de figure des dés comme par exemple cas 0, la progression sur les 2 combinaison est possible
-            if joueur.progression_tour["colonne"].count(None) >= 2 :
-                if possibilite[0] not in joueur.colonne_fini and possibilite[1] not in joueur.colonne_fini :
+            cas_figure = -1 #var qui indique le cas de figure des dés comme par exemple cas 0, la progression sur les 2 combinaison est possible
+            #cas_figure = -1 : choix impossible
+            #cas_figure = 0 : les deux possibilité sont viable
+            #cas_figure = 1 : possibilité 1 viable
+            #cas_figure = 2 : possibilité 2 viable
+            #cas_figure = 3 : possibilité 1 viable ou (exclusif) possibilité 2 viable
+            #on calcule et choisis le cas_figure en fonction des positions des tours et des colonnes fini 
+            if joueur.progression_tour["colonne"].count(None) >= 2 : #s'il reste au moins 2 tours disponible on peut forcément poser les 2 tours ou se déplacer (à moins qu'une colonne ne soit déjà fini)  
+                if possibilite[0] not in joueur.colonne_fini and possibilite[1] not in joueur.colonne_fini : #si aucune des deux colonne n'est fini, 
                     cas_figure = 0
-                elif possibilite[0] in joueur.colonne_fini :
+                elif possibilite[0] in joueur.colonne_fini :#si la colonne possibilité 1 est fini
                     cas_figure = 2
-                elif possibilite[1] in joueur.colonne_fini :
+                elif possibilite[1] in joueur.colonne_fini :#si la colonne possibilité 2 est fini
                     cas_figure = 1
-            elif joueur.progression_tour["colonne"].count(None) == 1 :
+            elif joueur.progression_tour["colonne"].count(None) == 1 : #s'il reste exactement 1 tour disponible (c'est ici où il peut y avoir le cas_figure = 3)
                 if (possibilite[0] not in joueur.colonne_fini and possibilite[1] not in joueur.colonne_fini) and (possibilite[0] in joueur.progression_tour["colonne"] or possibilite[1] in joueur.progression_tour["colonne"]):
                     cas_figure = 0
                 elif possibilite[0] not in joueur.progression_tour["colonne"] and possibilite[1] not in joueur.progression_tour["colonne"] :
-                    if possibilite[0] in joueur.colonne_fini :
+                    if possibilite[0] in joueur.colonne_fini : #si la colonne possibilité 1 est fini
                         cas_figure = 2
-                    elif possibilite[1] in joueur.colonne_fini :
+                    elif possibilite[1] in joueur.colonne_fini : #si la colonne possibilité 2 est fini
                         cas_figure = 1
                     else :
                         cas_figure = 3
             elif joueur.progression_tour["colonne"].count(None) == 0 :
-                if (possibilite[0] not in joueur.colonne_fini and possibilite[1] not in joueur.colonne_fini) and possibilite[0] in joueur.progression_tour["colonne"] and possibilite[1] in joueur.progression_tour["colonne"] :
-                    if possibilite[0] in joueur.colonne_fini :
+                if (possibilite[0] not in joueur.colonne_fini and possibilite[1] not in joueur.colonne_fini) and possibilite[0] in joueur.progression_tour["colonne"] and possibilite[1] in joueur.progression_tour["colonne"] : #si les 2 possibilité on déjà des tour placé au bonne colonnes
+                    if possibilite[0] in joueur.colonne_fini : #si la colonne possibilité 2 est fini
                         cas_figure = 2
-                    if possibilite[1] in joueur.colonne_fini :
+                    if possibilite[1] in joueur.colonne_fini : #si la colonne possibilité 2 est fini
                         cas_figure = 1
-                if possibilite[0] in joueur.progression_tour["colonne"] and possibilite[0] not in joueur.colonne_fini :
+                if possibilite[0] in joueur.progression_tour["colonne"] and possibilite[0] not in joueur.colonne_fini : 
                     cas_figure = 1
                 if possibilite[1] in joueur.progression_tour["colonne"] and possibilite[1] not in joueur.colonne_fini :
                     cas_figure = 2
@@ -98,7 +104,7 @@ class Des :
                     
                 
                 
-            #affichage des bouton(s) ou non en fonction du cas de figure
+            #création des bouton(s) ou non en fonction du cas de figure
             if cas_figure == 0 :
                 texte_bouton = f"Progresser sur {possibilite[0]} et {possibilite[1]}"
                 boutons.creation_bouton(5*self.largeur_ecran//8+3*self.largeur_ecran//32, y, texte_bouton, "progression", [possibilite[0], possibilite[1]])
@@ -113,8 +119,8 @@ class Des :
                 boutons.creation_bouton(5*self.largeur_ecran//8+3*self.largeur_ecran//32, y, texte_bouton, "progression", [possibilite[0], None])                  
                 texte_bouton = f"Progresser sur {possibilite[1]}"
                 boutons.creation_bouton(5*self.largeur_ecran//8+3*self.largeur_ecran//32, y+self.hauteur_ecran//11, texte_bouton, "progression", [possibilite[1], None])
-            else :
-                self.choix_impossible["choix"][f"choix{indice}"] = y
+            else : #sinon cass_figure = -1, le choix est impossible
+                self.choix_impossible["choix"][f"choix{indice}"] = y #choix_impossible["choix"]["choix{indice}"] = None par défaut. S'il est != None, c'est que ce choix est impossible
             y+=3*self.hauteur_ecran//11
             indice+=1
         if self.choix_impossible["choix"]["choix1"] != None and self.choix_impossible["choix"]["choix2"] != None and self.choix_impossible["choix"]["choix3"] != None : #True si aucun choix n'est possible
@@ -122,13 +128,13 @@ class Des :
 
 
 
-    def reinitialisation(self) :
+    def reinitialisation(self) : #fonction qui réinitialise la classe
         self.liste_des_lance = [] #liste qui contient les 4 dés lancé avec 2 paramètre "face" et "image" dans la fonction lancer_des
         self.affichage_resultat = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []} #les associations des dés seront compris dans l'ordre : dés 1 va avec dé 2 et dés 3 avec le 4 (on a une liste arrangé)
         self.colonne_association = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []}
-        self.choix_impossible = {"choix" : {"choix1" : None, "choix2" : None, "choix3" : None},   #si un choix est None, c'est que ce choix est possible et qu'il y a un boutton associé
+        self.choix_impossible = {"choix" : {"choix1" : None, "choix2" : None, "choix3" : None},   #si un choix est None, c'est que ce choix est possible et qu'il y a un bouton associé
                                  "perdu_fin_du_tour" : False,     #"perdu_fin_du_tour" est mis en True si aucun choix n'est possible.
-                                 "anim_static_image" : vitesse_animation*2}     #"anim_static_image" ets le nombre d'image (en image par secondes) qu'il reste pour que l'image avec le s3 choix impossible reste affiché pendant 2 secondes (sachant qu'on a 30 images par secondes)
+                                 "anim_static_image" : vitesse_animation*2}     #"anim_static_image" est le nombre d'image (en image par secondes) qu'il reste pour que l'image avec le s3 choix impossible reste affiché pendant 2 secondes (sachant qu'on a 30 images par secondes)
 
 
 

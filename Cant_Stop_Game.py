@@ -97,11 +97,11 @@ sprite_chargement_IA = [pygame.transform.scale(pygame.image.load(get_chemin(f"./
 
 
 #initialisation du jeu
-plateau = Plateau(largeur_ecran, hauteur_ecran, get_chemin) #ces tois paramètres étant utilse pour l'importation et redimensionner les images
+plateau = Plateau(largeur_ecran, hauteur_ecran, get_chemin) #ces trois paramètres étant utile pour l'importation et redimensionner les images
 #création de 2 instances pour les 2 joueurs (quand l'IA joue, elle prend la place du joueur rouge)
 joueur_jaune1 = Joueur(1, largeur_ecran, hauteur_ecran, get_chemin)
 joueur_rouge2 = Joueur(2, largeur_ecran, hauteur_ecran, get_chemin)
-#classe qui va gerer les boutons
+#classe qui va gérer les boutons
 boutons = Boutons(largeur_ecran, hauteur_ecran, get_chemin)
 #création des boutons du menu (Jouer en J vs J (Joueur versus Joueur), Joueur en J vs IA (Joueur versus IA) et Quitter)
 boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//6, "Jouer en J vs J", "jouer_jcj", None)
@@ -138,7 +138,7 @@ while main_loop:
         window.blit(text_surf, text_surf.get_rect(center = (largeur_ecran//2, hauteur_ecran//2-conv_sizey(200, hauteur_ecran)+plateau.deplacement_text_menu())))
 
         #affichage des boutons
-        pos_sourie_X, pos_sourie_Y = pygame.mouse.get_pos() #on récupère la possition en X et Y de la sourie
+        pos_sourie_X, pos_sourie_Y = pygame.mouse.get_pos() #on récupère la position en X et Y de la sourie
         boutons.test_survole(pos_sourie_X, pos_sourie_Y, clic, None, False) #fonction qui test si on survole ou clic sur bouton. D'où le clic en argument. Ici, None et False sotn des argument utile pour que l'IA clic sur les boutons (dans le menu, il n'ya a pas d'IA)
         clic = None #après avoir tester les clic sur les boutons, on remet clic à None 
         #on parcours tout les boutons dans la liste des boutons de la classe boutons
@@ -164,6 +164,7 @@ while main_loop:
                     #on randomise le joueur qui commence à jouer
                     joueur_actuel, text_joueur_actuel, message_change_en_jeu = randomiseur_joueur_commence(joueur_jaune1, joueur_rouge2, IA_joue, randint)
                     boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2, "Lancer les dés", "lancer_des", None)
+                    boutons.creation_bouton(conv_sizex(1943, largeur_ecran), 0, "", "retour_menu", None)
                     #on change de boucle
                     menu_loop = False
                     game_loop = True
@@ -173,9 +174,10 @@ while main_loop:
                     IA_joue = True
                     joueur_actuel, text_joueur_actuel, message_change_en_jeu = randomiseur_joueur_commence(joueur_jaune1, joueur_rouge2, IA_joue, randint)
                     boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2, "Lancer les dés", "lancer_des", None)
+                    boutons.creation_bouton(conv_sizex(1943, largeur_ecran), 0, "", "retour_menu", None)
                     menu_loop = False
                     game_loop = True
-                    #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont scipt qui va choisir quel est le meilleur bouton à appuyer
+                    #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont script qui va choisir quel est le meilleur bouton à appuyer
                     if text_joueur_actuel == 2 :
                         animation_IA_en_cours = True
                         #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
@@ -186,11 +188,11 @@ while main_loop:
 
 
 
-    while game_loop : #boutcle du jeu
+    while game_loop : #boucle du jeu
 		#Limitation de vitesse de la boucle
         clock.tick(fps) 
-        #events clavier
-        keys = pygame.key.get_pressed() #on récupère tout les touches du clavier (keys[] = True si la touche est préssé)
+        #évents clavier
+        keys = pygame.key.get_pressed() #on récupère tout les touches du clavier (keys[] = True si la touche est pressé)
         for event in pygame.event.get():   #On parcours la liste de tous les événements reçus
             if event.type == QUIT or keys[K_LSHIFT] and keys[K_ESCAPE] :     #Si un de ces événements est de type QUIT
                 main_loop = False
@@ -200,7 +202,7 @@ while main_loop:
                 
             else :
                 clic = None #sinon, on met clic à None pour indiqué qu'il n'y a pas de clic
-        #defilement() permet d'effectuer le défilement de l'image du background du menu (voir la classe plateau pour plus de détail)
+        #défilement() permet d'effectuer le défilement de l'image du background du menu (voir la classe plateau pour plus de détail)
         plateau.defilement()
         #---affichage des images/textes
         #plateau/background
@@ -216,7 +218,7 @@ while main_loop:
         window.blit(text_surf, text_surf.get_rect(center = (5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//11)))
 
         #affichage des boutons
-        pos_sourie_X, pos_sourie_Y = pygame.mouse.get_pos() #on récupère la possition en X et Y de la sourie
+        pos_sourie_X, pos_sourie_Y = pygame.mouse.get_pos() #on récupère la position en X et Y de la sourie
         boutons.test_survole(pos_sourie_X, pos_sourie_Y, clic, text_joueur_actuel, IA_joue)  #fonction qui test si on survole ou clic sur bouton. D'où le clic en argument. text_joueur_actuel, IA_joue permettent de savoir si c'est l'IA qui joue. Auquel cas, on empêche le joeuur de pouvoir clicker à la place de l'IA sur les boutons
         clic = None#après avoir tester les clic sur les boutons, on remet clic à None 
         #on parcours tout les boutons dans la liste des boutons de la classe boutons
@@ -238,11 +240,13 @@ while main_loop:
                     des.lancer_des()
                     #init_affichage() permet de calculer les choix possible et de créé les boutons adéquat
                     des.init_affichage(boutons, joueur_actuel)
-                    #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont scipt qui va choisir quel est le meilleur bouton à appuyer
+                    #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont script qui va choisir quel est le meilleur bouton à appuyer
                     if IA_joue and text_joueur_actuel == 2:
                         animation_IA_en_cours = True
-                        if len(boutons.liste_bouton) == 0 :
-                            print("1111111111111111111")
+                        # if len(boutons.liste_bouton) == 0 :
+                        #     print("1111111111111111111")
+                        #     while len(boutons.liste_bouton) == 0 and des.choix_impossible["perdu_fin_du_tour"] == False: #utile pour régler un bug qui démarre l'IA alors que les choix n'on pas encore été calculé. On attend donc que ces calcules soit terminé
+                        #         pass
                         #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
                         IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
                         IAthread.start()                
@@ -262,7 +266,7 @@ while main_loop:
                     #remise à 0 des 3 association possible (ici, on les 2 possible colonnes enregistré dans les listes)
                     des.colonne_association = {"possibilité_1" : [],"possibilité_2" : [],"possibilité_3" : []}
                 elif bouton["type_bouton"] == "stop" :
-                    joueur_actuel.colonne_fini_residu = [] #vide la liste des residus (voir la classe joueur pour comprendre sont utilité)
+                    joueur_actuel.colonne_fini_residu = [] #vide la liste des résidus (voir la classe joueur pour comprendre sont utilité)
                     #déplacement des pions (uniquement l'initialisation). L'animation et fin d'animation se fait plus bas dans les animations
                     joueur_actuel.deplace_Pion()
                     boutons.destruction_tout_les_boutons()
@@ -283,19 +287,39 @@ while main_loop:
                     des.reinitialisation()
                     boutons.destruction_tout_les_boutons()
                     boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//6, "Jouer en J vs J", "jouer_jcj", None)
-                    boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//50, "Jouer en J vs IA", "jouer_jcai", None)
+                    boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//50, "Jouer en J vs IA", "jouer_jcia", None)
                     boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4+hauteur_ecran//8, "Quitter", "quitter", None)
                     message_change_en_jeu = None
                     game_loop = False
                     menu_loop = True
                     IA_joue = False
                 
+        #affichage du bouton retour au menu
+        if boutons.bouton_retour_menu != None :
+            if boutons.bouton_retour_menu["survol"] :
+                window.blit(boutons.image_bouton_croix_survol, (conv_sizex(1560, largeur_ecran), 0))
+            else :
+                window.blit(boutons.image_bouton_croix, (conv_sizex(1843, largeur_ecran), 0))
+            if boutons.bouton_retour_menu["clic"] :
+                    boutons.bouton_retour_menu = None
+                    #on réinitialise tout puis on reviens dans la boucle du menu
+                    joueur_jaune1.reinitialisation()
+                    joueur_rouge2.reinitialisation()
+                    des.reinitialisation()
+                    boutons.destruction_tout_les_boutons()
+                    boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//6, "Jouer en J vs J", "jouer_jcj", None)
+                    boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4-hauteur_ecran//50, "Jouer en J vs IA", "jouer_jcia", None)
+                    boutons.creation_bouton(largeur_ecran//2, 3*hauteur_ecran//4+hauteur_ecran//8, "Quitter", "quitter", None)
+                    message_change_en_jeu = None
+                    game_loop = False
+                    menu_loop = True
+                    IA_joue = False
 
 
 
         #affichage des dés
         if len(des.liste_des_lance) != 0 : #on test s'il y a des dés lancé. Si oui, on peut les afficher
-            possibilite = 1 #il y a 3 possibilité car 3 combinaison des 4 dés. Cette variable parcour les possibilité
+            possibilite = 1 #il y a 3 possibilité car 3 combinaison des 4 dés. Cette variable parcours les possibilité
             couple = 0 #utile pour avoir les couples de dés. Pour chaque possibilité, les couples sont 0 avec 1 et 2 avec 3
             for y in range(2*hauteur_ecran//11, hauteur_ecran-3*hauteur_ecran//11, 3*hauteur_ecran//11) :
                 for x in range(5*largeur_ecran//8, largeur_ecran-largeur_ecran//8, largeur_ecran//8) :
@@ -306,14 +330,14 @@ while main_loop:
                 couple = 0
         
         #affichage des textes "choix impossible"
-        for y in des.choix_impossible["choix"].values() : #on parcours les vleurs (qui sont des coordonnées y des position des textes "choix impossible")
+        for y in des.choix_impossible["choix"].values() : #on parcours les valeurs (qui sont des coordonnées y des position des textes "choix impossible")
             if y != None : #si le choix en question est bien impossible (None équivaut à un choix possible)
                 text_surf = font1.render(f"choix impossible", True, (255,255,255))
                 window.blit(text_surf, text_surf.get_rect(center = (5*largeur_ecran//8+3*largeur_ecran//32, y)))
         
         #"animation" quand le joueur n'as aucun choix possible pour laisser afficher cet écran pendant 2 secondes
         if des.choix_impossible["perdu_fin_du_tour"] : #si on a bien eu 3 choix impossible, cette variable se met à True dans la classe Des
-            des.choix_impossible["anim_static_image"]-=1 #pour une vitesse normal, cette variable est par défault à 60. ce qui fait attendre 2 seconde sachant qu'on a 30 images par secondes
+            des.choix_impossible["anim_static_image"]-=1 #pour une vitesse normal, cette variable est par défaut à 60. ce qui fait attendre 2 seconde sachant qu'on a 30 images par secondes
             if des.choix_impossible["anim_static_image"] == 0 : #fin de l'attente
                 #on enlève les colonnes atteint par les tours mais finalement pas bloqué par un pion avec le bouton stop. Cet progression est donc supprimé
                 for col in joueur_actuel.colonne_fini_residu :
@@ -347,19 +371,17 @@ while main_loop:
                     message_change_en_jeu = None
                     joueur_actuel = joueur_jaune1 #variable qui contiendra la class du joueur actuel (utile pour simplifier le code)
                 else :
-                    #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont scipt qui va choisir quel est le meilleur bouton à appuyer
+                    #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont script qui va choisir quel est le meilleur bouton à appuyer
                     if IA_joue and text_joueur_actuel == 2:
                         animation_IA_en_cours = True
                         message_change_en_jeu = "Tour de l'IA"
-                        if len(boutons.liste_bouton) == 0 :
-                            print("22222222222222222222")
                         #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
                         IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
                         IAthread.start()
                     joueur_actuel = joueur_rouge2
 
 
-        #affichage des pré_position affiche le nombre de pion qu'un joueur à amené au sommet. (affiche les pions restant à monter en pointillet) il y a 3 pions d'affiché
+        #affichage des pré_position affiche le nombre de pion qu'un joueur à amené au sommet. (affiche les pions restant à monter en pointillé) il y a 3 pions d'affiché
         for pre_pion in range(3) :
             #affichage joueur jaune 
             if len([joueur_jaune1.colonne_fini[k] for k in range(len(joueur_jaune1.colonne_fini)) if joueur_jaune1.colonne_fini[k] not in joueur_jaune1.colonne_fini_residu]) > pre_pion :
@@ -375,7 +397,7 @@ while main_loop:
         #affichage des pions        
         for pion in range(2,13) : #il ne peut y avoir au maximum qu'un pion par colonne
             window.blit(joueur_jaune1.pion, (joueur_jaune1.coords_pion[f"coords_pion{pion}"][0]-joueur_jaune1.taille_tour[0]//2, joueur_jaune1.coords_pion[f"coords_pion{pion}"][1]-joueur_jaune1.taille_tour[1]//2))
-            if joueur_jaune1.pion_placement[pion] == joueur_rouge2.pion_placement[pion]: #si les coordonnés des 2 pions sont les même (les pion sont au même endrois sur le plateau), on décale un peu le pion rouge pour pouvoir le voir dessous
+            if joueur_jaune1.pion_placement[pion] == joueur_rouge2.pion_placement[pion]: #si les coordonnés des 2 pions sont les même (les pion sont au même endroit sur le plateau), on décale un peu le pion rouge pour pouvoir le voir dessous
                 window.blit(joueur_rouge2.pion, (joueur_rouge2.coords_pion[f"coords_pion{pion}"][0]-joueur_rouge2.taille_tour[0]//4, joueur_rouge2.coords_pion[f"coords_pion{pion}"][1]-joueur_rouge2.taille_tour[1]//4))
             else :
                 window.blit(joueur_rouge2.pion, (joueur_rouge2.coords_pion[f"coords_pion{pion}"][0]-joueur_rouge2.taille_tour[0]//2, joueur_rouge2.coords_pion[f"coords_pion{pion}"][1]-joueur_rouge2.taille_tour[1]//2))
@@ -406,11 +428,9 @@ while main_loop:
                 boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2-hauteur_ecran//12, "Lancer les dés", "lancer_des", None) #puis on affiche la suite du jeu avec les boutons lancer les dés et arrêter
                 boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32,hauteur_ecran//2+hauteur_ecran//12, "Stop", "stop", None)
                 joueur_actuel.animation_en_cours = False
-                #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont scipt qui va choisir quel est le meilleur bouton à appuyer
+                #si l'IA commence à jouer (IA est le joueur rouge (2)), on lance directement sont script qui va choisir quel est le meilleur bouton à appuyer
                 if IA_joue and text_joueur_actuel == 2:
                     animation_IA_en_cours = True
-                    if len(boutons.liste_bouton) == 0 :
-                        print("3333333333333333333")
                     #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
                     IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
                     IAthread.start()
@@ -428,7 +448,7 @@ while main_loop:
         if joueur_actuel.animation_en_cours and anim_pion_fini : #on a fini toutes les animations
                 joueur_actuel.animation_pion = [] #on vide la liste des animations
                 joueur_actuel.animation_en_cours = False
-                #asignation de la nouvelle hauteur pour chaque pion en fonction de la hauteur des tours
+                #assignation de la nouvelle hauteur pour chaque pion en fonction de la hauteur des tours
                 for ind_tour in range(3) : #on regarde chaque tour pour changer la valeur de hauteur des pions
                     if joueur_actuel.progression_tour["colonne"][ind_tour] != None : #si la tour a bien été placé sur le plateau
                         joueur_actuel.pion_placement[joueur_actuel.progression_tour["colonne"][ind_tour]] = joueur_actuel.progression_tour["hauteur"][ind_tour]
@@ -446,9 +466,10 @@ while main_loop:
                         text_joueur_actuel = 1
                     boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2, "Retour au menu", "goto_menu", None)
                     message_change_en_jeu = f"Le joueur {text_joueur_actuel} gagne la partie"
+                    boutons.bouton_retour_menu = None
                 else : #sinon, on continue le jeu en changeant de joueur
                     boutons.creation_bouton(5*largeur_ecran//8+3*largeur_ecran//32, hauteur_ecran//2-hauteur_ecran//6, "Lancer les dés", "lancer_des", None) #puis on affiche la suite du jeu avec les boutons lancer les dés et arrêter
-                    #chagement de joueur
+                    #changement de joueur
                     text_joueur_actuel = changement_joueur(text_joueur_actuel)
                     if text_joueur_actuel == 1 :
                         animation_IA_en_cours = False
@@ -459,8 +480,6 @@ while main_loop:
                         if IA_joue and text_joueur_actuel == 2:
                             animation_IA_en_cours = True
                             message_change_en_jeu = "Tour de l'IA"
-                            if len(boutons.liste_bouton) == 0 :
-                                print("4444444444444444444")
                             #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
                             IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
                             IAthread.start()

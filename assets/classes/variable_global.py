@@ -12,9 +12,9 @@ message_change_en_jeu = None #message = Joueur X a gagné ! quand un joueur gagn
 IA_joue = False
 animation_IA_en_cours = False
 animation_IA_sprite_indice = 0
-nombre_iterration = 800
+nombre_iterration = 500
 
-#######def var boolean boucles in game
+#######def variable Boolean des boucles 
 main_loop = True #boucle de la fenêtre de jeu
 game_loop = False #boucle du jeu
 menu_loop = True #boucle du jeu

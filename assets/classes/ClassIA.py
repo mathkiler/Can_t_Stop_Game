@@ -8,12 +8,14 @@ from assets.classes.fonction_auxiliere import *
 
 
 class IA (threading.Thread):
-    def __init__(self, choix, j1, j2) :
-        threading.Thread.__init__(self)
+    def __init__(self, choix, j1, j2) : #on prend en paramètre les choix possible (boutons) et l'état actuel du jeu à travers les classes joueur 1 et joueur 2
+        #les choix sont directement la liste boutons.liste_bouton et hérite de ces propriété comme "clic" pour simuler un clic sur un bouton en particulier
+        threading.Thread.__init__(self) #le thread permet au jeu de continuer à faire des animation pendant le calcule du prochain choix de l'IA
         self.choix = choix
         self.j1 = j1
         self.j2 = j2
         self.joueur_actuel = "IA" #ici, l'IA commence toujours à jouer
+        #variable/listes qui vont simuler les nombre_iterration de jeu
         self.progression_tour = {"IA" : {"colonne" : [None, None, None], "hauteur" : [None, None, None]}, 
                                   "joueur" : {"colonne" : [None, None, None], "hauteur" : [None, None, None]}}
         self.pion_placement = {"IA" : [None for k in range(13)], 
@@ -23,19 +25,28 @@ class IA (threading.Thread):
         self.colonne_fini_residu = {"IA" : [], 
                              "joueur" : []}
 
-    def run(self) : #on reçoit par choix les boutons sur lesquelles on peut clicker #on considaire que j1 = joueur et j2 = IA
-        if len(self.choix) == 1 : #ici, on n'as qu'un bouton/choix possible. On choisi donc ce bouton
+    def run(self) : #on reçoit par choix les boutons sur lesquelles on peut cliquer #on considère que j1 = joueur et j2 = IA
+        if len(self.choix) == 0 :
+            sys.exit() #permet de fermer le thread
+        elif len(self.choix) == 1 : #ici, on n'as qu'un bouton/choix possible. On choisi donc ce bouton
             self.choix[0]["clic"] = True
+            sys.exit() #permet de fermer le thread
         else :
-            nombre_gagnant = [{"IA" : 0, "joueur" : 0} for k in range(len(self.choix))]
+            #rajout d'amélioration de l'IA : s'il lui reste au moins une tour, l'IA peut forcément jouer au prochain tour en relancent les dés. Donc on force le choix de relancer les dés  
+            if self.choix[0]["type_bouton"] == "lancer_des" :
+                if self.j2.progression_tour["colonne"].count(None) >=1 :#l'IA a au moins une tour de disponible
+                    self.choix[0]["clic"] = True #on force le choix à "lancer_des"
+                    sys.exit() #permet de fermer le thread
+
+            nombre_gagnant = [{"IA" : 0, "joueur" : 0} for k in range(len(self.choix))] #initialisation de la liste du nombre de gagnant IA et joueur pour calculer le ratio après
             ratio = []
 
-            for iterration in range(nombre_iterration) :
-                self.initialisation_simulation(self.j1, self.j2)
-                for choi in self.choix :
-                    ind_choix = self.choix.index(choi)
-                    #variable qui contient le nombre de partie gagné par joueur (j2 = IA)
-                    #on ramène notre choix à "lancer les dés" pour synchroniser toutes les simulations possible 
+            for iterration in range(nombre_iterration) : #on boucle nombre_iterration de fois chaque choix possible pour avoir un ratio plus précis (loi des grand nombre)
+                for choi in self.choix : #on regarde chaque choix possible
+                    self.initialisation_simulation(self.j1, self.j2) #on initialise le jeu à l'état qu'est en réalité le jeu
+                    ind_choix = self.choix.index(choi) #indice du choix dans la liste des choix (bouton) possible
+                    #on initialise avant de boucler à l'infini pour synchroniser tout les choix à "lancer les dés"
+                    #on ramène donc à "lancer les dés" (cheminement expliqué dans la boucle en dessous)
                     if choi["type_bouton"] == "stop" :
                         self.deplacement_pion()
                         if self.test_joueur_gagnant() :
@@ -46,40 +57,40 @@ class IA (threading.Thread):
                         self.deplacement_tour(choi["info_sup"])
  
                     
-                    #boucle d'une partie. On tourne en boucle tant qu'il n'y a pas un gagnant 
+                    #boucle d'une partie. On tourne en boucle tant qu'il n'y a pas de gagnant 
                     while True :
-                        result_lancer_des = self.lancer_des()
-                        if result_lancer_des == False :
-                            self.suppression_sauvegarde_tour()
-                            self.changement_joueur()
-                        else :
-                            self.deplacement_tour(choice(result_lancer_des))
-                            choix_lancer_stop = choice(["lancer_des", "stop"])
-                            if choix_lancer_stop == "stop" :
-                                self.deplacement_pion()
-                                if self.test_joueur_gagnant() :
-                                    nombre_gagnant[ind_choix][f"{self.joueur_actuel}"]+=1
-                                    break
-                                self.changement_joueur()
+                        result_lancer_des = self.lancer_des() #on lance les dés
+                        if result_lancer_des == False : #si aucun choix n'est possible
+                            self.suppression_sauvegarde_tour() #réinitialisation de la position des tour (et donc suppression de cette "sauvegarde des tour")
+                            self.changement_joueur() #on change de joueur 
+                        else : #sinon si au moins un choix est possible
+                            self.deplacement_tour(choice(result_lancer_des)) #on choisis au hasard parmi tout les choix possible dans result_lancer_des avec la fonction choice du module random. On affecte directement le déplacement des tours
+                            choix_lancer_stop = choice(["lancer_des", "stop"]) #ensuite on choisis au hasard entre lancer les dés et "stop"
+                            if choix_lancer_stop == "stop" : #si on a choisis de s'arrêter
+                                self.deplacement_pion()#déplacement des pions
+                                if self.test_joueur_gagnant() : #test si la partie est fini
+                                    nombre_gagnant[ind_choix][f"{self.joueur_actuel}"]+=1 #si oui, on ajoute +1 au nombre de partie gagné au joueur self.joueur_actuel
+                                    break #puis on sort de la boucle
+                                self.changement_joueur() #s'il n'y a pas de gagnant, on change de joueur et repart à "lancer les dés" en haut de la boucle
+                            #else : si on a choisis "lancer_des" on remonte en haut de la boucle où on lance les dés
             
             #on calcule le ratio gagnant pour l'IA uniquement (nombre de partie gagné par l'IA/nombre de partie total)
             for choix_gagnant in nombre_gagnant :
-                ratio.append(choix_gagnant["IA"]/nombre_iterration)
-            #on choisi le meilleur choix pour clicker sur ce bouton
-            print(ratio, nombre_gagnant, self.choix, "\n\n")
-            while True :
+                ratio.append(choix_gagnant["IA"]/nombre_iterration) 
+            #on choisi le meilleur choix pour cliquer sur ce bouton
+            print(f"{ratio=}", f"{nombre_gagnant=}", f"{self.choix=}", "\n\n")
+            while True : #choix du meilleur choix. On a un boucle car si 2 choix on le même ratio, on ne choisis pas le premier mais de manière aléatoire entre les meilleur choix
                 ind_meilleur_choix = randint(0,len(ratio)-1)
-                if ratio[ind_meilleur_choix] == max(ratio) :
+                if ratio[ind_meilleur_choix] == max(ratio) : #on sort de la boucle ssi on le choix a le meilleur ratio
                     break
-
-            
-            self.choix[ind_meilleur_choix]["clic"] = True
+            self.choix[ind_meilleur_choix]["clic"] = True #on change la valeur du choix(bouton) du clic à True pou qu'on puisse simuler un clic interne et que le jeu puisse continuer
             print("choix : " +self.choix[ind_meilleur_choix]["type_bouton"]+"\n\__________________n")
-        sys.exit() 
+        sys.exit() #permet de fermer le thread
 
 
 
-
+    #on redéfini les fonction du jeu mais sans prendre en compte des coordonnées.
+    #ces fonction sont donc très similaire voir copier coller au jeu et au classes respective. Mise à part qu'elle on été simplifié dans un usage faîte pour l'IA uniquement (donc aucune interface) et optimisé
 
     def lancer_des(self) :
         des = [randint(1,6) for k in range(4)]
@@ -96,7 +107,7 @@ class IA (threading.Thread):
         
         for possibilite in colonne_association.values() :
             #choix où les deux déplacement sont possible
-            cas_figure = -1 #var qui indiue le cas de figure des dés comme par exemple cas 0, la progression sur les 2 combinaison est possible
+            cas_figure = -1 #var qui indique le cas de figure des dés comme par exemple cas 0, la progression sur les 2 combinaison est possible
             if self.progression_tour[f"{self.joueur_actuel}"]["colonne"].count(None) >= 2 :
                 if possibilite[0] not in self.colonne_fini[f"{self.joueur_actuel}"] and possibilite[1] not in self.colonne_fini[f"{self.joueur_actuel}"] :
                     cas_figure = 0
@@ -169,7 +180,7 @@ class IA (threading.Thread):
                 ind_tour = 0
                 for tour in self.progression_tour[f"{self.joueur_actuel}"]["colonne"] :
                     if tour == None :
-                        self.progression_tour[f"{self.joueur_actuel}"]["colonne"][ind_tour] = colonne #on initialise la tour avec colonne et hauteur (à 1 par défault)
+                        self.progression_tour[f"{self.joueur_actuel}"]["colonne"][ind_tour] = colonne #on initialise la tour avec colonne et hauteur (à 1 par défaut)
                         if self.pion_placement[f"{self.joueur_actuel}"][colonne] == None :
                             self.progression_tour[f"{self.joueur_actuel}"]["hauteur"][ind_tour] = 1
                         else :
@@ -184,7 +195,7 @@ class IA (threading.Thread):
 
     def deplacement_pion(self) :
 
-        #asignation de la nouvelle hauteur pour chaque pion en fonction de la hauteur des tours
+        #assignation de la nouvelle hauteur pour chaque pion en fonction de la hauteur des tours
         for ind_tour in range(3) :
             if self.progression_tour[f"{self.joueur_actuel}"]["colonne"][ind_tour] != None :
                 self.pion_placement[f"{self.joueur_actuel}"][self.progression_tour[f"{self.joueur_actuel}"]["colonne"][ind_tour]] = self.progression_tour[f"{self.joueur_actuel}"]["hauteur"][ind_tour]
@@ -212,7 +223,7 @@ class IA (threading.Thread):
         #copy des colonnes fini
         self.colonne_fini["joueur"] = j1.colonne_fini.copy()
         self.colonne_fini["IA"] = j2.colonne_fini.copy()
-        #copy des colonnes résidu fini (rappel des colonnes fini résidu : sauvegarde les tour arrivé au sommet mais pas encore enregistré en tant que pion. Si le joueur désside de ne pas arrêter son tour de jeu, il risque de perdre la progression de ses tours arrivé au sommet)
+        #copy des colonnes résidu fini (rappel des colonnes fini résidu : sauvegarde les tour arrivé au sommet mais pas encore enregistré en tant que pion. Si le joueur décide de ne pas arrêter son tour de jeu, il risque de perdre la progression de ses tours arrivé au sommet)
         self.colonne_fini_residu["joueur"] = j1.colonne_fini_residu.copy()
         self.colonne_fini_residu["IA"] = j2.colonne_fini_residu.copy()
 

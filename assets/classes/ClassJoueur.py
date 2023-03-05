@@ -12,9 +12,9 @@ class Joueur :
         self.largeur_ecran = largeur_ecran
         self.taille_tour = (conv_sizex(50, self.largeur_ecran), conv_sizey(50, self.hauteur_ecran))
         self.taille_pion = (conv_sizex(50, self.largeur_ecran), conv_sizey(50, self.hauteur_ecran))
-        self.joueur = joueur
+        self.joueur = joueur #numéro du joueur (1 ou 2)
         if self.joueur == 1 :
-            couleur_joueur = "jaune" #variable utile uniquement pour savoir uel image importer (pion_jaune ou pion_rouge)
+            couleur_joueur = "jaune" #variable utile uniquement pour savoir quel image importer (pion_jaune ou pion_rouge)
         else :
             couleur_joueur = "rouge"
 
@@ -22,32 +22,32 @@ class Joueur :
         self.pion = pygame.transform.scale(pygame.image.load(get_chemin(f"./assets/images/Pions_tour/pion_{couleur_joueur}.png")).convert_alpha(), (conv_sizex(50, self.largeur_ecran), conv_sizey(50, self.hauteur_ecran)))
         self.tour = pygame.transform.scale(pygame.image.load(get_chemin("./assets/images/Pions_tour/tour.png")).convert_alpha(), (conv_sizex(50, self.largeur_ecran), conv_sizey(50, self.hauteur_ecran)))
         self.pre_position = pygame.transform.scale(pygame.image.load(get_chemin(f"./assets/images/Pions_tour/forme_pre_position_{couleur_joueur}.png")).convert_alpha(), (conv_sizex(50, self.largeur_ecran), conv_sizey(50, self.hauteur_ecran)))
-        #le .convert_alpha est utile pour les image avec des parties trensparent
+        #le .convert_alpha est utile pour les image avec des parties transparent
 
-        #placement des tours en haut à gauche de l'écran par défault
+        #placement des tours en haut à gauche de l'écran par défaut
         self.coords_tour = {
             "coords_tour1" : [self.largeur_ecran//38.4, self.hauteur_ecran//21.6],
             "coords_tour2" : [self.largeur_ecran//11.29, self.hauteur_ecran//21.6], 
             "coords_tour3" : [self.largeur_ecran//38.4, self.hauteur_ecran//6.35]
         }
         #dictionnaire qui sauvegarde les coordonnées des pions
-        self.coords_pion = {f"coords_pion{k}" : [0, self.hauteur_ecran+self.hauteur_ecran//40] for k in range(2,13)} #liste qui contient les coordonnés en [x, y] des pions. Par défaut ils osn placé en bas à gauche e, dehors de l'écran (on ne les vois pas)
+        self.coords_pion = {f"coords_pion{k}" : [0, self.hauteur_ecran+self.hauteur_ecran//40] for k in range(2,13)} #liste qui contient les coordonnés en [x, y] des pions. Par défaut ils sont placé en bas à gauche e, dehors de l'écran (on ne les vois pas)
 
         self.animation_tour = [] #liste qui va comprendre les tours devant effectuer un déplacement (animation)
         self.animation_pion = [] #liste qui va comprendre les pion devant effectuer un déplacement (animation)
 
-        self.pion_placement = [None for k in range(13)] #pion placé qui ne se déplace qu'à la fin d'un tour de jeu. la variable enregistré pour chaques pion est la hauteur (None si le pion n'est pas placé) On met range(13) pour avoir 12 mais on n'utilisera uniquement les pions de 2 à 12 (on initialise quand même les pionns 0 et 1 pour éviter des problèmes d'out of range)
+        self.pion_placement = [None for k in range(13)] #pion placé qui ne se déplace qu'à la fin d'un tour de jeu. la variable enregistré pour chaque pion est la hauteur (None si le pion n'est pas placé) On met range(13) pour avoir 12 mais on n'utilisera uniquement les pions de 2 à 12 (on initialise quand même les pions 0 et 1 pour éviter des problèmes d'out of range)
         self.progression_tour = {"colonne" : [None, None, None], "hauteur" : [None, None, None]} #tour qui se déplace à chaque choix de lancer un dés. Si aucun choix n'es possible, la progression est perdu
-        self.colonne_fini = [] #liste des collones que le joueur a fini
-        self.colonne_fini_residu = [] #liste des colonnes fini utilisé lorsqu'un tour n'est pas fini et qu'un joueur perd sa progression alors qu'il à ateint un sommet
+        self.colonne_fini = [] #liste des colonnes que le joueur a fini
+        self.colonne_fini_residu = [] #liste des colonnes fini utilisé lorsqu'un tour n'est pas fini et qu'un joueur perd sa progression alors qu'il à atteint un sommet
         self.animation_en_cours = False
 
 
     def delplace_Tour(self, colonnes) :#fonction qui va initialiser le déplacement des tours (colonnes sont les colonnes où les tours doivent se déplacer) (il peut y avoir au maximum 2 déplacement)
         #quand on arrive ici, le test si on peut déplacer les tours on déjà été fait. Donc chaque colonne où une tour doit se déplacer, se déplacera. C'est pourquoi il n'y a pas besoin de mettre une sécurité
         self.animation_en_cours = True
-        var_tamp = None #variable utile quand les 2 déplacements se fonct sur la même colonne et qu'il n'y a pas encore eu de déplacement sur cettte colonne
-        for colonne in colonnes : #on parcour toutes les colonnes où l'on veux qu'une tour se déplace
+        var_tamp = None #variable utile quand les 2 déplacements se font sur la même colonne et qu'il n'y a pas encore eu de déplacement sur cette colonne
+        for colonne in colonnes : #on parcours toutes les colonnes où l'on veux qu'une tour se déplace
             if colonne != None : #si colonne est None, c'est 'il n'y a pas de déplacement sur celle-ci
                 #on sépare en 2 catégorie : 1 -> une tour est déjà présent sur la colonne. 2 -> aucune tour n'est présent sur la colonne 
                 if colonne in self.progression_tour["colonne"] : #True si une tour est déjà sur cette colonne (on avance de 1 dans cette colonne)
@@ -76,7 +76,7 @@ class Joueur :
                     ind_tour = 0 #indice de la tour
                     for tour in self.progression_tour["colonne"] : #on regarde chaque tour
                         if tour == None : #si la tour n'est pas encore utilisé
-                            self.progression_tour["colonne"][ind_tour] = colonne #on initialise la tour avec colonne et hauteur (à 1 par défault)
+                            self.progression_tour["colonne"][ind_tour] = colonne #on initialise la tour avec colonne et hauteur (à 1 par défaut)
                             if self.pion_placement[colonne] == None : #si un pion n'est pas encore placé dans cette colonne, on l'initialise à 1
                                 self.progression_tour["hauteur"][ind_tour] = 1
                             else : #sinon on augmente la hauteur du pion + 1
@@ -117,8 +117,8 @@ class Joueur :
             ind_tour+=1
 
 
-    def test_si_gagnant(self) : #fonction qui test si le joueur self est un gagant
-        if len(self.colonne_fini) == 3 :#s'il a fini 3 colonne : 3 pion (et non tour) on atteitn le sommet
+    def test_si_gagnant(self) : #fonction qui test si le joueur self est un gagnant
+        if len(self.colonne_fini) == 3 :#s'il a fini 3 colonne : 3 pion (et non tour) on atteint le sommet
             return True
         return False
 
@@ -130,14 +130,14 @@ class Joueur :
             "coords_tour3" : [self.largeur_ecran//38.4, self.hauteur_ecran//6.35]
         }
 
-        self.coords_pion = {f"coords_pion{k}" : [0, self.hauteur_ecran+self.hauteur_ecran//40] for k in range(2,13)} #liste qui contient les coordonnés en [x, y] des pions. Par défaut ils osn placé en bas à gauche e, dehors de l'écran (on ne les vois pas)
+        self.coords_pion = {f"coords_pion{k}" : [0, self.hauteur_ecran+self.hauteur_ecran//40] for k in range(2,13)} #liste qui contient les coordonnés en [x, y] des pions. Par défaut ils sont placé en bas à gauche e, dehors de l'écran (on ne les vois pas)
 
         self.animation_tour = [] #liste qui va comprendre les tours devant effectuer un déplacement (animation)
         self.animation_pion = []
 
-        self.pion_placement = [None for k in range(13)] #pion placé qui ne se déplace qu'à la fin d'un tour de jeu. On met range(13) pour avoir 12 mais on n'utilisera uniquement les pions de 2 à 12 (on initialise quand même les pionns 0 et 1 pour éviter des problèmes d'out of range)
+        self.pion_placement = [None for k in range(13)] #pion placé qui ne se déplace qu'à la fin d'un tour de jeu. On met range(13) pour avoir 12 mais on n'utilisera uniquement les pions de 2 à 12 (on initialise quand même les pions 0 et 1 pour éviter des problèmes d'out of range)
         self.progression_tour = {"colonne" : [None, None, None], "hauteur" : [None, None, None]} #tour qui se déplace à chaque choix de lancer un dés. Si aucun choix n'es possible, la progression est perdu
-        self.colonne_fini = [] #liste des collones que le joueur a fini
+        self.colonne_fini = [] #liste des colonnes que le joueur a fini
         self.animation_en_cours = False
 
 
