@@ -3,14 +3,18 @@ import copy
 import threading
 import sys
 
+
+
 from assets.classes.variable_global import *
 from assets.classes.fonction_auxiliere import *
 
 
 class IA (threading.Thread):
-    def __init__(self, choix, j1, j2) : #on prend en paramètre les choix possible (boutons) et l'état actuel du jeu à travers les classes joueur 1 et joueur 2
+    def __init__(self, choix, j1, j2, des_class, boutons_class) : #on prend en paramètre les choix possible (boutons) et l'état actuel du jeu à travers les classes joueur 1 et joueur 2
         #les choix sont directement la liste boutons.liste_bouton et hérite de ces propriété comme "clic" pour simuler un clic sur un bouton en particulier
         threading.Thread.__init__(self) #le thread permet au jeu de continuer à faire des animation pendant le calcule du prochain choix de l'IA
+        self.des_class = des_class
+        self.boutons_class = boutons_class
         self.choix = choix
         self.j1 = j1
         self.j2 = j2
@@ -26,9 +30,19 @@ class IA (threading.Thread):
                              "joueur" : []}
 
     def run(self) : #on reçoit par choix les boutons sur lesquelles on peut cliquer #on considère que j1 = joueur et j2 = IA
-        if len(self.choix) == 0 :
-            sys.exit() #permet de fermer le thread
-        elif len(self.choix) == 1 : #ici, on n'as qu'un bouton/choix possible. On choisi donc ce bouton
+        # if len(self.choix) == 0 and self.des_class.choix_impossible["perdu_fin_du_tour"] == False:
+        #     print("passage")
+        #     self.boutons_class.destruction_tout_les_boutons()
+        #     self.des_class.lancer_des()
+        #     #init_affichage() permet de calculer les choix possible et de créé les boutons adéquat
+        #     if self.joueur_actuel == "IA" :
+        #         tamp = self.j2
+        #     else : 
+        #         tamp = self.j1
+        #     self.des_class.init_affichage(self.boutons_class, tamp)
+        if len(self.choix) == 0 : #si aucun choix n'est possible (donc self.des_class.choix_impossible["perdu_fin_du_tour"] = True)
+            sys.exit()
+        if len(self.choix) == 1 : #ici, on n'as qu'un bouton/choix possible. On choisi donc ce bouton
             self.choix[0]["clic"] = True
             sys.exit() #permet de fermer le thread
         else :
@@ -61,12 +75,16 @@ class IA (threading.Thread):
                     while True :
                         result_lancer_des = self.lancer_des() #on lance les dés
                         if result_lancer_des == False : #si aucun choix n'est possible
+                            for col in self.colonne_fini_residu[f"{self.joueur_actuel}"] :
+                                self.colonne_fini[f"{self.joueur_actuel}"].pop(self.colonne_fini[f"{self.joueur_actuel}"].index(col))
+                            self.colonne_fini_residu[f"{self.joueur_actuel}"] = []
                             self.suppression_sauvegarde_tour() #réinitialisation de la position des tour (et donc suppression de cette "sauvegarde des tour")
                             self.changement_joueur() #on change de joueur 
                         else : #sinon si au moins un choix est possible
                             self.deplacement_tour(choice(result_lancer_des)) #on choisis au hasard parmi tout les choix possible dans result_lancer_des avec la fonction choice du module random. On affecte directement le déplacement des tours
                             choix_lancer_stop = choice(["lancer_des", "stop"]) #ensuite on choisis au hasard entre lancer les dés et "stop"
                             if choix_lancer_stop == "stop" : #si on a choisis de s'arrêter
+                                self.colonne_fini_residu[f"{self.joueur_actuel}"] = []
                                 self.deplacement_pion()#déplacement des pions
                                 if self.test_joueur_gagnant() : #test si la partie est fini
                                     nombre_gagnant[ind_choix][f"{self.joueur_actuel}"]+=1 #si oui, on ajoute +1 au nombre de partie gagné au joueur self.joueur_actuel
@@ -206,7 +224,7 @@ class IA (threading.Thread):
 
 
     def test_joueur_gagnant(self) :
-        if len(self.colonne_fini[f"{self.joueur_actuel}"]) == 3 :
+        if len(self.colonne_fini[f"{self.joueur_actuel}"]) >= 3 :
             return True
         return False
 

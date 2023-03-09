@@ -181,7 +181,7 @@ while main_loop:
                     if text_joueur_actuel == 2 :
                         animation_IA_en_cours = True
                         #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
-                        IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
+                        IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2, des, boutons)
                         IAthread.start()                    
         #Rafraîchissement de l'écran
         pygame.display.flip()
@@ -248,7 +248,7 @@ while main_loop:
                         #     while len(boutons.liste_bouton) == 0 and des.choix_impossible["perdu_fin_du_tour"] == False: #utile pour régler un bug qui démarre l'IA alors que les choix n'on pas encore été calculé. On attend donc que ces calcules soit terminé
                         #         pass
                         #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
-                        IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
+                        IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2, des, boutons)
                         IAthread.start()                
 
                 elif bouton["type_bouton"] == "progression" :
@@ -376,7 +376,7 @@ while main_loop:
                         animation_IA_en_cours = True
                         message_change_en_jeu = "Tour de l'IA"
                         #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
-                        IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
+                        IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2, des, boutons)
                         IAthread.start()
                     joueur_actuel = joueur_rouge2
 
@@ -432,7 +432,7 @@ while main_loop:
                 if IA_joue and text_joueur_actuel == 2:
                     animation_IA_en_cours = True
                     #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
-                    IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
+                    IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2, des, boutons)
                     IAthread.start()
 
 
@@ -481,7 +481,7 @@ while main_loop:
                             animation_IA_en_cours = True
                             message_change_en_jeu = "Tour de l'IA"
                             #on utilise un thread car l'IA peut mettre plusieurs secondes pour calculer sont choix. Avec un thread, on ne bloque pas l'affichage du jeu
-                            IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2)
+                            IAthread = IA(boutons.liste_bouton, joueur_jaune1, joueur_rouge2, des, boutons)
                             IAthread.start()
                         joueur_actuel = joueur_rouge2
 
