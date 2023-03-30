@@ -70,9 +70,9 @@ class IA (threading.Thread):
                     elif choi["type_bouton"] == "progression" :
                         self.deplacement_tour(choi["info_sup"])
  
-                    
+                    i = 0
                     #boucle d'une partie. On tourne en boucle tant qu'il n'y a pas de gagnant 
-                    while True :
+                    while True or i==10000:
                         result_lancer_des = self.lancer_des() #on lance les dés
                         if result_lancer_des == False : #si aucun choix n'est possible
                             for col in self.colonne_fini_residu[f"{self.joueur_actuel}"] :
@@ -91,6 +91,7 @@ class IA (threading.Thread):
                                     break #puis on sort de la boucle
                                 self.changement_joueur() #s'il n'y a pas de gagnant, on change de joueur et repart à "lancer les dés" en haut de la boucle
                             #else : si on a choisis "lancer_des" on remonte en haut de la boucle où on lance les dés
+                        i+=1
             
             #on calcule le ratio gagnant pour l'IA uniquement (nombre de partie gagné par l'IA/nombre de partie total)
             for choix_gagnant in nombre_gagnant :
